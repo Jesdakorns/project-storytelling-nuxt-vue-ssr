@@ -60,7 +60,7 @@ export default {
           this.objData.createdAtStory = story.created_at
           this.objData.contentStory = story.story
           this.objData.imageStorys = story.image
-          //sdtggsdg
+        // xgsdgsd
         })
         .catch((err) => {
           // eslint-disable-next-line no-console
