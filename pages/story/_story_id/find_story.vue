@@ -34,19 +34,7 @@ export default {
         createdAtStory: '',
         contentStory: '',
         imageStorys: ''
-      },
-      story: '',
-      profile: '',
-      colors: [
-        'indigo',
-        'warning',
-        'pink darken-2',
-        'red lighten-1',
-        'deep-purple accent-4'
-      ],
-      slides: [
-
-      ]
+      }
     }
   },
   created () {
@@ -72,6 +60,7 @@ export default {
           this.objData.createdAtStory = story.created_at
           this.objData.contentStory = story.story
           this.objData.imageStorys = story.image
+          // test git
         })
         .catch((err) => {
           // eslint-disable-next-line no-console
