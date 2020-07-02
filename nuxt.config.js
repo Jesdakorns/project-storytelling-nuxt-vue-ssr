@@ -21,7 +21,8 @@ module.exports = {
       { href: 'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900', rel: 'stylesheet' },
       { href: 'https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css', rel: 'stylesheet' },
       { href: 'https://fonts.googleapis.com/css?family=Material+Icons', rel: 'stylesheet' },
-      { href: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css', rel: 'stylesheet' }
+      { href: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css', rel: 'stylesheet' },
+      { href: 'https://cdn.jsdelivr.net/npm/font-awesome@4.x/css/font-awesome.min.css', rel: 'stylesheet' }
     ],
     script: [
       { src: 'https://cdn.jsdelivr.net/npm/vue-mce@latest/dist/vue-mce.web.js', type: 'text/javascript' }
@@ -76,7 +77,7 @@ module.exports = {
   },
   proxy: {
     '/api': {
-      target: 'http://localhost:8000/',
+      target: 'http://project-test.test/api/auth/',
       pathRewrite: {
         '^/api': '/'
       }

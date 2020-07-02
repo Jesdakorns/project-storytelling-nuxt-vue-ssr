@@ -1,16 +1,11 @@
 <template>
   <v-app v-if="isLogin == false || this.$cookies.get('_Key')">
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
-      <v-list shaped>
+    <v-navigation-drawer v-model="drawer" absolute temporary>
+      <v-list v-if="isLogin === false" shaped>
         <v-list-item
-          v-for="(item, i) in menus"
+          v-for="(item, i) in menusNotLogin"
           :key="i"
+
           :class="item.class"
           :to="item.to"
           color="#2E7D32"
@@ -22,10 +17,13 @@
             <v-list-item-title v-text="item.title" />
           </v-list-item-content>
         </v-list-item>
+      </v-list>
 
+      <v-list v-else-if="isLogin === true" shaped>
         <v-list-group
           color=""
           no-action
+          class="hidden-sm-and-up"
         >
           <template v-slot:activator>
             <v-list-item-action>
@@ -33,26 +31,42 @@
                 account_circle
               </v-icon>
             </v-list-item-action>
-            <v-list-item-title>จัดการเรื่องราว</v-list-item-title>
+            <v-list-item-title>{{ name }}</v-list-item-title>
           </template>
 
           <v-list-item
-            v-for="(admin, i) in admins"
+            v-for="(admin, i) in menusProfile"
             :key="i"
             v-model="admin.active"
-            :to="admin.to"
-            color="deep-orange lighten-1"
+            color="lighten-1"
+            @click="actionsMenusProfile(admin.key)"
           >
             <v-list-item-content>
               <v-list-item-title v-text="admin.title" />
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
+
+        <v-list-item
+          v-for="(item, i) in menusLogin"
+          :key="i"
+
+          :class="item.class"
+          :to="item.to"
+          color="#2E7D32"
+        >
+          <v-list-item-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title" />
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar :clipped-left="clipped" fixed app>
-      <div class="bt-menu">
+    <v-app-bar :clipped-left="clipped" app>
+      <div class="bt-menu d-flex d-lg-none">
         <v-btn
           text
           large
@@ -64,6 +78,38 @@
           MENU
         </v-btn>
       </div>
+
+      <div class="hidden-md-and-down">
+        <div
+          v-if="isLogin === false"
+          class="row align-center ml-2"
+        >
+          <v-btn
+            v-for="(item, i) in menusNotLogin"
+            :key="i"
+            text
+            :class="item.class"
+            :to="item.to"
+          >
+            <span class="v-btn__content" v-text="item.title" />
+          </v-btn>
+        </div>
+        <div
+          v-if="isLogin === true"
+          class="row align-center ml-2"
+        >
+          <v-btn
+            v-for="(item, i) in menusLogin"
+            :key="i"
+            text
+            :class="item.class"
+            :to="item.to"
+          >
+            <span class="v-btn__content" v-text="item.title" />
+          </v-btn>
+        </div>
+      </div>
+
       <v-col cols="col">
         <v-toolbar-title class="text-center" dark>
           <nuxt-link to="/" class="black--text text-uppercase">
@@ -71,24 +117,70 @@
           </nuxt-link>
         </v-toolbar-title>
       </v-col>
-      <!-- <v-spacer /> -->
       <div class="text-center">
         <v-btn
-          :to="'auth'"
-          :class="'ma-2 d-none d-sm-flex'+ isLoginClass"
+          v-if="isLogin === false"
+          :to="'/auth'"
+          :class="'ma-2 d-none d-sm-flex'"
           outlined
           color="#43A047"
         >
           Login / Regiter
         </v-btn>
+
+        <div
+          v-if="isLogin === true"
+          class="d-flex justify-center align-center"
+        >
+          <v-menu
+            rounded="lg"
+            offset-y
+          >
+            <template v-slot:activator="{ attrs, on }">
+              <v-list-item
+                link
+                v-bind="attrs"
+                :class="'ma-2 d-none d-sm-flex'"
+                v-on="on"
+              >
+                <v-list-item-content>
+                  <v-list-item-title class="">
+                    {{ name }}
+                  </v-list-item-title>
+                </v-list-item-content>
+
+                <v-list-item-action>
+                  <v-icon>mdi-menu-down</v-icon>
+                </v-list-item-action>
+              </v-list-item>
+            </template>
+
+            <v-list>
+              <v-list-item
+                v-for="(admin, i) in menusProfile"
+                :key="i"
+                v-model="admin.active"
+                link
+                color="lighten-1"
+              >
+                <v-list-item-title
+
+                  @click="actionsMenusProfile(admin.key)"
+                >
+                  {{ admin.title }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
       </div>
     </v-app-bar>
 
-    <v-content class="bd-content">
+    <v-content>
       <nuxt />
     </v-content>
 
-    <v-footer :fixed="fixed" app>
+    <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
@@ -97,26 +189,29 @@
 <script>
 
 export default {
-  components: {
-
-  },
+  components: { },
   data () {
     return {
-      dialog: false,
+      name: '',
+      title: 'Storytelling',
       clipped: true,
       drawer: false,
-      fixed: false,
-      miniVariant: false,
-      title: 'Storytelling ',
-      isLoginClass: '',
       isLogin: false,
-      menus: [
+      menusNotLogin: [
         {
           icon: 'fas fa-sign-in-alt',
           title: 'Login / Regiter',
           to: '/auth',
-          class: 'd-flex d-sm-none'
+          class: 'hidden-sm-and-up'
         },
+        {
+          icon: 'fas fa-home',
+          title: 'Home',
+          to: '/',
+          class: ''
+        }
+      ],
+      menusLogin: [
         {
           icon: 'fas fa-home',
           title: 'Home',
@@ -126,34 +221,65 @@ export default {
         {
           icon: 'mdi-chart-bubble',
           title: 'Manage story',
-          to: '/story/manage_story',
+          to: '/manage/story/dashboard',
           class: ''
         }
       ],
-      admins: [
+      menusProfile: [
         {
           icon: 'fas fa-sign-in-alt',
-          title: 'เพิ่มเรื่องราว',
-          to: '/inspire',
-          class: ''
+          title: 'Setting',
+          to: '',
+          class: '',
+          key: 'profile'
         },
         {
           icon: 'fas fa-sign-in-alt',
-          title: 'Login / Regiter',
-          to: '/inspire2',
-          class: ''
+          title: 'Logout',
+          to: '',
+          class: '',
+          key: 'logout'
         }
       ]
     }
   },
   created () {
-    if (this.$router.currentRoute.path === '/') {
-      if (this.$cookies.get('_Key')) {
-        this.isLogin = true
-      } else {
+    // if (this.$router.currentRoute.path === '/') {
+    if (this.$cookies.get('_Key')) {
+      this.$axios.defaults.headers.common.Authorization = `${this.$cookies.get('_Key')}`
+      this.$axios.get('/api/user').then((res) => {
+        const result = res.data.data
+        this.name = result.name
+      }).catch((err) => {
+        console.error(err)
+      })
+      this.isLogin = true
+    } else {
+      this.isLogin = false
+    }
+  },
+  mounted () {
+
+  },
+  methods: {
+    actionsMenusProfile (key) {
+      console.log(key)
+
+      if (key === 'logout') {
+        this.$cookies.remove('_Key')
         this.isLogin = false
-        // this.$router.push('/auth', () => {})
+        this.$router.push('/', () => {})
+      } else if (key === 'profile') {
+        this.$router.push('/profile', () => {})
       }
+    }
+  },
+  head () {
+    return {
+      title: 'Storytelling',
+      meta: [
+        { hid: 'description', name: 'description', content: 'การเล่าเรื่องราวต่างๆ ให้ผู้คนได้รับประสบการณ์ใหม่ๆ' }
+      ]
     }
   }
 }
@@ -182,5 +308,11 @@ export default {
 }
 a {
   text-decoration: none;
+}
+.v-btn--active {
+   color: #43A047!important;
+}
+.v-input__icon.v-input__icon--clear{
+  display: none !important;
 }
 </style>

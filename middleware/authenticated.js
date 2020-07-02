@@ -1,10 +1,5 @@
-
-export default function ({ store, redirect }) {
-  // If the user is not authenticated
-  if (this.$cookies.get('_Key')) {
-    this.isLogin = true
-  } else {
-    this.isLogin = false
-    this.$router.push('/auth', () => {})
+export default (context) => {
+  if (!context.app.$cookies.get('_Key')) {
+    return context.redirect('/auth')
   }
 }

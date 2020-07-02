@@ -4,10 +4,7 @@
       dark
       src="https://cdn.pixabay.com/photo/2018/10/15/07/33/background-3748311_1280.jpg"
     >
-      <v-row
-        align="center"
-        justify="center"
-      >
+      <v-row align="center" justify="center">
         <v-col class="text-center black--text" cols="12">
           <h1 class="display-2 font-weight-thin mb-4">
             Storytelling
@@ -18,7 +15,7 @@
         </v-col>
       </v-row>
     </v-parallax>
-    <v-container class="">
+    <v-container>
       <v-row>
         <v-col
           v-for="(story, i) in storys"
@@ -28,7 +25,13 @@
           md="4"
           lg="3"
         >
-          <cardAllStory :id="story.id" :title="story.title" :image="story.image" :description="story.description" :abstract="story.short_story" />
+          <cardAllStory
+            :id="story.sr_id"
+            :title="story.sr_title"
+            :image="story.sr_image"
+            :description="story.sr_description"
+            :abstract="story.sr_abstract"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -36,40 +39,39 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import cardAllStory from '@/components/cardAllStorys'
 
 export default {
+  layout: '',
   components: {
     cardAllStory
   },
-  data () {
-    return {
-      storys: []
-    }
+  asyncData (context) {
+    return context.$axios.get('api/story')
+      .then((res) => {
+        const data = []
+        res.data.data.forEach((element) => {
+          data.push(element)
+        })
+        // console.log(data)
+
+        return {
+          storys: data
+        }
+      })
+  },
+  computed: {
+    // storyss () {
+    //   return { storys: this.$store.getters.getStorys }
+    // }
   },
   created () {
-    this.allStory()
+    this.$store.dispatch('setStorys')
   },
-  mounted () {
-
-  },
+  mounted () {},
   methods: {
-    allStory () {
-      axios
-        .get('/api/all_storys')
-        .then((result) => {
-          const data = result.data.additionalUserInfo.story
-          data.forEach((element) => {
-            this.storys.push(element)
-          })
-        })
-        .catch((err) => {
-          // eslint-disable-next-line no-console
-          console.log(err)
-        })
-      // console.log(this.storys)
-    }
+
   }
 }
 </script>

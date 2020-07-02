@@ -14,8 +14,8 @@
         md="4"
         class="text-center d-none d-sm-flex"
       >
-        <img v-if="step==0" src="https://auth.jobthai.com/image/Login_Jobseeker.svg" alt="" width="90%">
-        <img v-if="step==1" src="https://auth.jobthai.com/image/login/search-candidate.svg" alt="" width="90%">
+        <img v-if="step==0" src="~/assets/img/undraw_authentication_fsn5.svg" alt="" width="90%">
+        <img v-if="step==1" src="~/assets/img/undraw_logic_n6th.svg" alt="" width="90%">
       </v-col>
       <v-col
         cols="12"
@@ -24,7 +24,7 @@
       >
         <v-card v-if="step==0" class="elevation-7">
           <v-toolbar
-            color="deep-orange darken-1"
+            color="green darken-2"
             dark
             flat
           >
@@ -42,7 +42,7 @@
                 name="emailLogin"
                 prepend-icon="fas fa-envelope"
                 type="text"
-                color="deep-orange darken-1"
+                color="green darken-1"
               />
 
               <v-text-field
@@ -52,10 +52,10 @@
                 name="passwordLogin"
                 prepend-icon="mdi-lock"
                 type="password"
-                color="deep-orange darken-1"
+                color="green darken-1"
               />
               <v-card-actions class="justify-center">
-                <v-btn color="deep-orange darken-1 justify-center" width="95%" dark @click="btnLogin">
+                <v-btn color="green darken-1 justify-center" width="95%" dark @click="btnLogin">
                   เข้าสู่ระบบ
                 </v-btn>
               </v-card-actions>
@@ -64,7 +64,7 @@
         </v-card>
         <v-card v-if="step==1" class="elevation-7">
           <v-toolbar
-            color="deep-orange darken-1"
+            color="green darken-2"
             dark
             flat
           >
@@ -84,7 +84,7 @@
                 name="nameRegister"
                 prepend-icon="mdi-account"
                 type="text"
-                color="deep-orange darken-1"
+                color="green darken-1"
               />
               <v-text-field
                 v-model="emailRegister"
@@ -92,7 +92,7 @@
                 name="emailRegister"
                 prepend-icon="fas fa-envelope"
                 type="text"
-                color="deep-orange darken-1"
+                color="green darken-1"
               />
 
               <v-text-field
@@ -102,10 +102,10 @@
                 name="passwordRegister"
                 prepend-icon="mdi-lock"
                 type="password"
-                color="deep-orange darken-1"
+                color="green darken-1"
               />
               <v-card-actions class="justify-center">
-                <v-btn color="deep-orange darken-1 justify-center" width="95%" dark @click="btnRegister">
+                <v-btn color="green darken-1 justify-center" width="95%" dark @click="btnRegister">
                   สมัคร
                 </v-btn>
               </v-card-actions>
@@ -134,9 +134,10 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
+  middleware: 'isAuthenticated',
   layout: 'auth',
   data () {
     return {
@@ -157,42 +158,43 @@ export default {
     }
   },
   created () {
-    if (this.$cookies.get('_Key')) {
-      this.isLogin = true
-      this.$router.push('/', () => {})
-    } else {
-      this.isLogin = false
-    }
+    // if (this.$cookies.get('_Key')) {
+    //   this.isLogin = true
+    //   this.$router.push('/', () => {})
+    // } else {
+    //   this.isLogin = false
+    // }
   },
   methods: {
     btnLogin () {
-      axios
+      this.$axios
         .post('/api/login', {
           email: this.emailLogin,
           password: this.passwordLogin
         })
-        .then((result) => {
-          if (this.$cookies.get('_Key') && result.data.additionalUserInfo.success === true) {
+        .then((res) => {
+          console.log(res.data)
+          this.$cookies.set('_Key', res.data.data.api_token)
+          if (this.$cookies.get('_Key') && res.data.status === 'success') {
             this.$router.push('/', () => {})
-          } else if (!this.$cookies.get('_Key') && result.data.additionalUserInfo.success === false) {
-            this.text = 'บัญชีนี้มีการเข้าสู่ระบบอยู่ กรุณารองใหม่อีกครั้ง'
+          } else if (!this.$cookies.get('_Key')) {
+            this.text = 'บัญชีนี้มีการเข้าสู่ระบบอยู่ กรุณาลองใหม่อีกครั้ง'
             this.snackbar = true
             this.color = '#E53935'
           }
         })
         .catch((err) => {
-          // eslint-disable-next-line no-console
-          console.log(err)
+          if (err) {}
         })
     },
     btnRegister () {
-      axios
+      this.$axios
         .post('/api/register', {
           name: this.nameRegister,
           email: this.emailRegister,
           password: this.passwordRegister
         })
-        .then((result) => {
+        .then((res) => {
           this.text = 'ลงทะเบียนเป็นสมาชิกสำเร็จ'
           this.snackbar = true
           this.color = '#11a903'

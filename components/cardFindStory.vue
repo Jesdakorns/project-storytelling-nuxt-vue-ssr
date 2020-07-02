@@ -4,7 +4,8 @@
   >
     <v-list-item>
       <v-list-item-avatar color="grey">
-        <v-img :src="objData.imageProfile" />
+        <!-- {{ objData.imageProfile }} -->
+        <v-img v-if="objData.imageProfile != null" :src="objData.imageProfile" />
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title class="headline">
@@ -30,7 +31,7 @@
             height="100%"
           >
             <v-img
-              :src="imageStory"
+              :src="imageStory.image"
               height="100%"
               contain
               class="grey darken-4"
@@ -52,7 +53,7 @@
     <v-card-actions>
       <v-btn
         text
-        color="deep-purple accent-4"
+        color="#007b05"
         to="/"
       >
         ย้อนกลับ

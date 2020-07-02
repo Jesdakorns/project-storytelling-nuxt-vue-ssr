@@ -30,12 +30,12 @@ export default {
     }
   },
   created () {
-    if (this.$cookies.get('_Key')) {
-      this.isLogin = true
-      this.$router.push('/', () => {})
-    } else {
-      this.isLogin = false
-    }
+    // if (this.$cookies.get('_Key')) {
+    //   this.isLogin = true
+    //   this.$router.push('/', () => {})
+    // } else {
+    //   this.isLogin = false
+    // }
   }
 }
 </script>
