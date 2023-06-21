@@ -29,7 +29,7 @@
     "cookie-universal-nuxt": "^2.1.4",
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
-    "nuxt": "^2.0.0",
+    "nuxt": "^3.4.3",
     "quill-image-drop-module": "^1.0.3",
     "quill-image-resize-module": "^3.0.0",
     "tiptap-vuetify": "^2.23.0",
